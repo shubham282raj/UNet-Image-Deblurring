@@ -1,8 +1,9 @@
 import os
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
+from PIL import Image
 
-def dataloader():
+def load_base_dataset():
     dataset_path = "dataset/train/train_sharp"
 
     if not os.path.exists(dataset_path):
@@ -22,7 +23,7 @@ def dataloader():
 
     return dataset
 
-def processed_dataset():
+def load_processed_dataset():
 
     dataset_blurred = "dataset/train/train_sharp_processed/blurred"
     dataset_clear = "dataset/train/train_sharp_processed/clear"
@@ -46,12 +47,27 @@ def processed_dataset():
     dataset = np.array(dataset)
     return dataset
 
-class BlurDataset(Dataset):
+class Blur_Clear_Dataset(Dataset):
     def __init__(self, processed_dataset):
-        pass
+        self.x = processed_dataset[:, 0]
+        self.y = processed_dataset[:, 1]
+        self.n_samples = processed_dataset.shape[0]
 
     def __getitem__(self, index):
-        pass
+        blur_img = Image.open(self.x[index])
+        clear_img = Image.open(self.y[index])
+        return blur_img, clear_img
 
     def __len__(self):
         return self.n_samples
+    
+def create_torch_dataloader(processed_dataset, batch_size=32, shuffle=True):
+    dataset = Blur_Clear_Dataset(
+        processed_dataset=processed_dataset
+    )
+    dataloader = DataLoader(
+        dataset=dataset,
+        batch_size=batch_size,
+        shuffle=shuffle
+    )
+    return dataloader
