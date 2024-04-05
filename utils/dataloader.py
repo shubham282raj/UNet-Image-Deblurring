@@ -4,6 +4,9 @@ import numpy as np
 from PIL import Image
 
 def load_base_dataset():
+    '''
+    returns dictionary of format <folder_name: [list of image paths]>
+    '''
     dataset_path = "dataset/train/train_sharp"
 
     if not os.path.exists(dataset_path):
@@ -20,10 +23,19 @@ def load_base_dataset():
             image_path = os.path.join(folder_path, file)
             images.append(image_path)
         dataset[folder] = images
+    
+    print("Dataset loaded successfully")
+    print(f"Number of folders: {len(dataset.keys())}")
+    print(f"Number of images: {sum([len(images) for images in dataset.values()])}")
 
     return dataset
 
 def load_processed_dataset():
+    '''
+    Load the processed dataset
+    returns a numpy array of shape (n_samples, 2)
+    format <blur_img, clear_img>
+    '''
 
     dataset_blurred = "dataset/train/train_sharp_processed/blurred"
     dataset_clear = "dataset/train/train_sharp_processed/clear"
@@ -45,6 +57,10 @@ def load_processed_dataset():
         dataset.append((blur_img, clear_img))
 
     dataset = np.array(dataset)
+
+    print("Processed dataset loaded successfully")
+    print(f"Number of images: {dataset.shape[0]}")
+    print("<blur_img, clear_img>")
     return dataset
 
 class Blur_Clear_Dataset(Dataset):
