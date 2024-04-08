@@ -85,7 +85,7 @@ def train_model(model,
                         optimizer.step()
                 
                 if i % 100 == 0:
-                    # clear_output()
+                    clear_output()
                     fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15,5))
                     axes[0].imshow(images[0].detach().cpu().permute(1,2,0))
                     axes[1].imshow(labels[0].detach().cpu().permute(1,2,0))
@@ -100,8 +100,8 @@ def train_model(model,
                 epoch_losses.append(current_loss)
                 running_loss += current_loss
 
-            if (i+1) % 10 == 0:
-                data_loader.set_postfix({'loss': loss.item()})
+                if (i+1) % 10 == 0:
+                    data_loader.set_postfix({'loss': loss.item()})
 
             if schedular != None and phase == "train":
                     schedular.step()
