@@ -1,5 +1,6 @@
 import os
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, random_split
+import torch
 import numpy as np
 from PIL import Image
 
@@ -72,18 +73,35 @@ class Blur_Clear_Dataset(Dataset):
     def __getitem__(self, index):
         blur_img = Image.open(self.x[index])
         clear_img = Image.open(self.y[index])
+
+        blur_img = torch.tensor(np.array(blur_img)).permute(2, 0, 1).float() / 255
+        clear_img = torch.tensor(np.array(clear_img)).permute(2, 0, 1).float() / 255
+
         return blur_img, clear_img
 
     def __len__(self):
         return self.n_samples
     
-def create_torch_dataloader(processed_dataset, batch_size=32, shuffle=True):
+def create_torch_dataloader(processed_dataset, batch_size=32, shuffle_train=True, split_train_val=False, val_split=0.2):
     dataset = Blur_Clear_Dataset(
         processed_dataset=processed_dataset
     )
-    dataloader = DataLoader(
-        dataset=dataset,
-        batch_size=batch_size,
-        shuffle=shuffle
-    )
-    return dataloader
+
+    if split_train_val:
+        # Calculate sizes for training and validation datasets
+        dataset_size = len(dataset)
+        train_size = int((1 - val_split) * dataset_size)
+        val_size = dataset_size - train_size
+        
+        # Split dataset
+        train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+        
+        # Create DataLoader for training and validation sets
+        train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle_train)
+        val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+        
+        return {"train": train_dataloader, "val": val_dataloader}
+    else:
+        # Create DataLoader without splitting
+        train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle_train)
+        return {"train": train_dataloader}
