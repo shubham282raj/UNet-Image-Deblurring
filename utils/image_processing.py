@@ -6,8 +6,8 @@ import numpy as np
 import multiprocessing
 
 dataset_path = "dataset/train/train_sharp"
-dataset_blurred = "dataset/train/train_sharp_processed/blurred"
-dataset_clear = "dataset/train/train_sharp_processed/clear"
+dataset_blurred = "dataset/train/train_sharp_processed/blur"
+dataset_clear = "dataset/train/train_sharp_processed/sharp"
 
 def _process_image(image):
 

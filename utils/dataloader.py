@@ -31,15 +31,15 @@ def load_base_dataset():
 
     return dataset
 
-def load_processed_dataset():
+def load_processed_dataset(base_path='dataset/train/train_sharp_processed'):
     '''
     Load the processed dataset
     returns a numpy array of shape (n_samples, 2)
     format <blur_img, clear_img>
     '''
 
-    dataset_blurred = "dataset/train/train_sharp_processed/blurred"
-    dataset_clear = "dataset/train/train_sharp_processed/clear"
+    dataset_blurred = os.path.join(base_path, "blur")
+    dataset_clear = os.path.join(base_path, "sharp")
 
     if (not os.path.exists(dataset_blurred)) or (not os.path.exists(dataset_clear)):
         print("processed images not available")
@@ -82,12 +82,12 @@ class Blur_Clear_Dataset(Dataset):
     def __len__(self):
         return self.n_samples
     
-def create_torch_dataloader(processed_dataset, batch_size=32, shuffle_train=True, split_train_val=False, val_split=0.2):
+def create_torch_dataloader(processed_dataset, batch_size=32, shuffle=True, val_split=0.2):
     dataset = Blur_Clear_Dataset(
         processed_dataset=processed_dataset
     )
 
-    if split_train_val:
+    if (val_split != 0 or val_split != 1):
         # Calculate sizes for training and validation datasets
         dataset_size = len(dataset)
         train_size = int((1 - val_split) * dataset_size)
@@ -97,11 +97,11 @@ def create_torch_dataloader(processed_dataset, batch_size=32, shuffle_train=True
         train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
         
         # Create DataLoader for training and validation sets
-        train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle_train)
+        train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle)
         val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
         
         return {"train": train_dataloader, "val": val_dataloader}
     else:
         # Create DataLoader without splitting
-        train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle_train)
-        return {"train": train_dataloader}
+        train_dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+        return {"train": train_dataloader} if val_split == 0 else {"val": train_dataloader}
