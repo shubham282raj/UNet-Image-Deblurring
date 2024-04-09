@@ -31,8 +31,9 @@ def psnr_between_folders(folder1, folder2):
 folder1 = "dataset/final_output/sharp/"
 folder2 = "dataset/final_output/blur/"
 
-if os.path.exists(folder1) and os.path.exists(folder2):
-    avg_psnr = psnr_between_folders(folder1, folder2)
-    print(f"Average PSNR between corresponding images: {avg_psnr} dB")
-else:
-    print("Error: One or more folders do not exist")
+def print_psnr():
+    if os.path.exists(folder1) and os.path.exists(folder2):
+        avg_psnr = psnr_between_folders(folder1, folder2)
+        print(f"Average PSNR between corresponding images: {avg_psnr} dB")
+    else:
+        print("Error: One or more folders do not exist")
