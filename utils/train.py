@@ -118,7 +118,7 @@ def train_model(model,
     train_time += sum(train_time_list)
 
     checkpoint = {
-        "epoch": num_epoch,
+        "epoch": num_epoch+epochs_completed,
         "criterion": criterion,
         "model_state": model.state_dict(),
         "optim_state": optimizer.state_dict(),
