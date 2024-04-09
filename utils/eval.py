@@ -28,8 +28,8 @@ def psnr_between_folders(folder1, folder2):
     return avg_psnr
 
 # Example usage:
-folder1 = "dataset/custom_test/sharp/"
-folder2 = "dataset/custom_test/blur/"
+folder1 = "dataset/final_output/sharp/"
+folder2 = "dataset/final_output/blur/"
 
 if os.path.exists(folder1) and os.path.exists(folder2):
     avg_psnr = psnr_between_folders(folder1, folder2)
